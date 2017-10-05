@@ -130,26 +130,15 @@ class Gann():
         return results[0], results[1], sess
 
     # experimental Mapping method
-    def mapping(self,grabbed_vars=None,cases=None,msg='Mapping'):
+    def mapping(self,grabbed_vars=None,msg='Mapping',cases=None):
         self.reopen_current_session()
-        if not cases: cases = self.caseman.get_validation_cases()
-        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
-        feeder = {self.input: inputs, self.target: targets}
-        error, grabvals, _ = self.run_one_step(self.error, grabbed_vars=grabbed_vars, session=self.current_session,
-                                           feed_dict=feeder,  show_interval=None)
+        error, grabvals, _ = self.run_one_step(self.error, grabbed_vars=grabbed_vars, session=self.current_session, feed_dict=cases,  show_interval=None)
         print('%s Set Error = %f ' % (msg, error))
         return grabvals  # self.error uses MSE, so this is a per-case value
 
-
-    # experimental Mapping method
-
-    def mapping_OLD(self, grabbed_vars=None,cases=None):
-        if not cases: cases = self.caseman.get_validation_cases()
-        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
-        feeder = {self.input: inputs, self.target: targets}
-
-        operator_result, grabbed_var_results, sess = self.run_one_step(self.error, grabbed_vars=grabbed_vars, feed_dict=feeder)
-        return operator_result, grabbed_var_results
+    def display_dendogram(self, layer, cases):
+        activation = self.mapping(grabbed_vars=self.modules[layer].output, cases=cases)
+        TFT.dendrogram(activation, cases[self.target])
 
     def display_grabvars(self, grabbed_vals, grabbed_vars,step=1):
         names = [x.name for x in grabbed_vars];
@@ -310,20 +299,30 @@ def autoex_ex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0
     ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.gen_probe(1,'bias',('hist','avg'))  # test plot of biases as histogram
     ann.gen_probe(1, 'wgt', ('hist', 'avg'))  # Plot a histogram and avg of the incoming weights to module 1.
-    #ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
+    ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
     ann.runmore(epochs*2)
     return ann
 
 def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+    # Setup, run, and evolve one_hot NN
     size = 2**nbits
     mbs = mbs if mbs else size
     case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
     ann = Gann(dims=[size,nbits,size],cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
     ann.run(epochs)
-    activation = ann.mapping(grabbed_vars=ann.modules[0].output)
-    print(activation)
+
+    #get cases and make dendrogram
+    cases = ann.caseman.get_training_cases()
+    inputs = [c[0] for c in cases];
+    targets = [c[1] for c in cases]
+    feeder = {ann.input: inputs, ann.target: targets}
+
+    ann.display_dendogram(0,feeder)
+    #activation = ann.mapping(grabbed_vars=ann.modules[1].output,cases=feeder)
+    #TFT.dendrogram(activation,targets)
+
 
 def autoex_parity(epochs=300,nbits=8,lrate=0.01,showint=100,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
     size = nbits
