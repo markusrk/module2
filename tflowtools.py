@@ -312,6 +312,8 @@ def plot_training_history(error_hist,validation_hist=[],xtitle="Epoch",ytitle="E
     if len(validation_hist) > 0:
         simple_plot([p[1] for p in validation_hist], [p[0] for p in validation_hist],xtitle=xtitle,ytitle=ytitle,title=title,label='validation error')
     PLT.legend()
+    PLT.draw()
+    PLT.pause(0.0001)
     PLT.ioff()
 
 # alpha = transparency

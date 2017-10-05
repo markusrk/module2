@@ -198,7 +198,7 @@ class Gann():
 
     def close_current_session(self):
         self.save_session_params(sess=self.current_session)
-        TFT.close_session(self.current_session, view=False) #change view back to true if you want tensor board to work
+        TFT.close_session(self.current_session, view=True) #change view back to true if you want tensor board to work
 
 
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
@@ -286,7 +286,7 @@ def autoex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=None,vfrac=0.1,tfrac=0.
     ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
-    ann.runmore(epochs*2)
+    #ann.runmore(epochs*2)
     return ann
 
 def autoex_ex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
@@ -319,7 +319,7 @@ def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfra
     targets = [c[1] for c in cases]
     feeder = {ann.input: inputs, ann.target: targets}
 
-    ann.display_dendogram(0,feeder)
+    ann.display_dendogram(1,feeder)
     #activation = ann.mapping(grabbed_vars=ann.modules[1].output,cases=feeder)
     #TFT.dendrogram(activation,targets)
 

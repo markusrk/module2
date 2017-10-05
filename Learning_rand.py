@@ -13,7 +13,7 @@ import tutor3
 
 #TFT.dendrogram(f,l)
 
-gann = Gann_test.mapping_test()
+gann = Gann_test.autoex()
 
 
 def test_case_man():
