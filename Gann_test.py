@@ -322,7 +322,8 @@ def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfra
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
     ann = Gann(dims=[size,nbits,size],cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
     ann.run(epochs)
-    print(ann.mapping(grabbed_vars=ann.modules[1].output))
+    activation = ann.mapping(grabbed_vars=ann.modules[0].output)
+    print(activation)
 
 def autoex_parity(epochs=300,nbits=8,lrate=0.01,showint=100,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
     size = nbits
