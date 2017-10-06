@@ -14,10 +14,13 @@ import tensorflow as tf
 
 #TFT.dendrogram(f,l)
 
-#gann = Gann_test.autoex_counter()
+t = tf.nn.relu(5)
+print(t.op)
 
-import sys
-print(getattr(tf.nn,"crelu"))
+#gann = Gann_test.autoex()
+
+#import sys
+#print(getattr(tf.nn,"crelu"))
 
 def test_case_man():
     nbits = 4

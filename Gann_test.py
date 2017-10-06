@@ -9,7 +9,8 @@ import tflowtools as TFT
 
 class Gann():
 
-    def __init__(self, dims, cman,lrate=.1,showint=None,mbs=10,vint=None,softmax=False):
+    def __init__(self, dims, cman, activation_func=None, lrate=.1,showint=None,mbs=10,vint=None,softmax=False):
+        self.activation_func = activation_func
         self.learning_rate = lrate
         self.layer_sizes = dims # Sizes of each layer of neurons
         self.show_interval = showint # Frequency of showing grabbed variables
@@ -204,8 +205,13 @@ class Gann():
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
 class Gannmodule():
 
-    def __init__(self,ann,index,invariable,insize,outsize):
+    def __init__(self,ann,index,invariable,insize,outsize,activation_func="relu"):
         self.ann = ann
+        # if activation function has been defined for this layer, use it, else use relu
+        if self.ann.activation_func and self.ann.activation_func[index]:
+            self.activation_func = self.ann.activation_func[index]
+        else:
+            self.activation_func = activation_func
         self.insize=insize  # Number of neurons feeding into this module
         self.outsize=outsize # Number of neurons in this module
         self.input = invariable  # Either the gann's input variable or the upstream module's output
@@ -219,7 +225,7 @@ class Gannmodule():
                                    name=mona+'-wgt',trainable=True) # True = default for trainable anyway
         self.biases = tf.Variable(np.random.uniform(-.1, .1, size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
-        self.output = tf.nn.relu(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
+        self.output = getattr(tf.nn, self.activation_func)(tf.matmul(self.input, self.weights) + self.biases, name=mona + '-out')
         self.ann.add_module(self)
 
     def getvar(self,type):  # type = (in,out,wgt,bias)
@@ -289,12 +295,12 @@ def autoex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=None,vfrac=0.1,tfrac=0.
     ann.runmore(epochs*2)
     return ann
 
-def autoex_ex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+def autoex_ex(epochs=300,nbits=4,activation__func=["crelu","crelu","crelu"], lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
     size = 2**nbits
     mbs = mbs if mbs else size
     case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=[size,nbits,size],cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
+    ann = Gann(dims=[size,nbits,size],cman=cman,activation_func=activation__func,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
     ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
     ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.gen_probe(1,'bias',('hist','avg'))  # test plot of biases as histogram
