@@ -286,7 +286,7 @@ def autoex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=None,vfrac=0.1,tfrac=0.
     ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
-    #ann.runmore(epochs*2)
+    ann.runmore(epochs*2)
     return ann
 
 def autoex_ex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
@@ -300,8 +300,9 @@ def autoex_ex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0
     ann.gen_probe(1,'bias',('hist','avg'))  # test plot of biases as histogram
     ann.gen_probe(1, 'wgt', ('hist', 'avg'))  # Plot a histogram and avg of the incoming weights to module 1.
     ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
+    ann.add_grabvar(1,'bias') # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
-    ann.runmore(epochs*2)
+    #ann.runmore(epochs*2)
     return ann
 
 def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
@@ -315,7 +316,7 @@ def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfra
 
     #get cases and make dendrogram
     cases = ann.caseman.get_training_cases()
-    inputs = [c[0] for c in cases];
+    inputs = [c[0] for c in cases]
     targets = [c[1] for c in cases]
     feeder = {ann.input: inputs, ann.target: targets}
 
@@ -324,14 +325,39 @@ def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfra
     #TFT.dendrogram(activation,targets)
 
 
-def autoex_parity(epochs=300,nbits=8,lrate=0.01,showint=100,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
+def autoex_parity(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
     size = nbits
     mbs = mbs if mbs else size
     case_generator = (lambda : TFT.gen_all_parity_cases(nbits))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=[size,4, 2], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
+    ann = Gann(dims=[size, 2**nbits, 2], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
     ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
-    ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
+
+    # Test dendogram functionality
+    cases = ann.caseman.get_training_cases()
+    inputs = [c[0] for c in cases]
+    targets = [c[1] for c in cases]
+    feeder = {ann.input: inputs, ann.target: targets}
+    ann.display_dendogram(1,feeder)
+    return ann
+
+
+def autoex_counter(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
+    size = 15
+    mbs = mbs if mbs else size
+    case_generator = (lambda : TFT.gen_vector_count_cases(500,15))
+    cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+    ann = Gann(dims=[size, 15, 2], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
+    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
+    ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
+    ann.run(epochs)
+
+    # Test dendogram functionality
+    cases = ann.caseman.get_training_cases()
+    inputs = [c[0] for c in cases]
+    targets = [c[1] for c in cases]
+    feeder = {ann.input: inputs, ann.target: targets}
+    ann.display_dendogram(1,feeder)
     return ann

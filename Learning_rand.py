@@ -2,6 +2,7 @@ import Gann_test
 import time
 import tflowtools as TFT
 import tutor3
+import tensorflow as tf
 
 #f_and_l = TFT.gen_all_parity_cases(3)
 #f = []
@@ -13,8 +14,10 @@ import tutor3
 
 #TFT.dendrogram(f,l)
 
-gann = Gann_test.autoex()
+#gann = Gann_test.autoex_counter()
 
+import sys
+print(getattr(tf.nn,"crelu"))
 
 def test_case_man():
     nbits = 4
