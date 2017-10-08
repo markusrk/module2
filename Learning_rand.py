@@ -1,8 +1,8 @@
 import Gann_test
-import time
 import tflowtools as TFT
+import matplotlib.pyplot as PLT
+import Gann_test_MSE
 import tutor3
-import tensorflow as tf
 
 #f_and_l = TFT.gen_all_parity_cases(3)
 #f = []
@@ -14,10 +14,11 @@ import tensorflow as tf
 
 #TFT.dendrogram(f,l)
 
-t = tf.nn.relu(5)
-print(t.op)
+#t = tf.nn.relu(5)
+#print(t.op)
 
-#gann = Gann_test.autoex()
+gann = Gann_test_MSE.countex_org()
+PLT.show()
 
 #import sys
 #print(getattr(tf.nn,"crelu"))
