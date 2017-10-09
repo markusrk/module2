@@ -1,8 +1,8 @@
-import Gann_test
-import tflowtools as TFT
 import matplotlib.pyplot as PLT
+
+import Gann_test
 import Gann_test_MSE
-import tutor3
+import tflowtools as TFT
 
 #f_and_l = TFT.gen_all_parity_cases(3)
 #f = []
@@ -19,6 +19,8 @@ import tutor3
 
 gann = Gann_test_MSE.countex_org()
 PLT.show()
+
+
 
 #import sys
 #print(getattr(tf.nn,"crelu"))

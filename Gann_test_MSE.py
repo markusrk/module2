@@ -82,7 +82,7 @@ class Gann():
             self.error_history.append((step, error/nmb))
             self.consider_validation_testing(step,sess)
         self.global_training_step += epochs
-        #TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error", title="error history",fig=not(continued))
+        TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error", title="error history",fig=not(continued))
 
     # bestk = 1 when you're doing a classification task and the targets are one-hot vectors.  This will invoke the
     # gen_match_counter error function. Otherwise, when
@@ -391,7 +391,7 @@ def autoex_counter(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tf
     ann.display_dendogram(1,feeder)
     return ann
 
-def countex(dims=[2] ,epochs=6000,nbits=15,ncases=500,lrate=0.20,showint=10000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1):
+def countex(dims=[42,42,42,42] ,epochs=5584,nbits=15,ncases=500,lrate=0.45,showint=10000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1):
     case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
     ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
@@ -402,7 +402,7 @@ def countex(dims=[2] ,epochs=6000,nbits=15,ncases=500,lrate=0.20,showint=10000,m
     return result
 
 
-def countex_org(epochs=15000,nbits=10,ncases=500,lrate=0.2,showint=5000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1):
+def countex_org(epochs=14793,nbits=10,ncases=500,lrate=0.2,showint=5000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1):
     case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
     ann = Gann(dims=[nbits, nbits*3, nbits*3, nbits+1], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
