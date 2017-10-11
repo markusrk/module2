@@ -62,7 +62,7 @@ class Gann():
         self.error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.output, name="cross_entropy_error"))
         self.predictor = self.output  # Simple prediction runs will request the value of output neurons
         # Defining the training operator
-        optimizer = tf.train.AdamOptimizer(self.learning_rate)
+        optimizer = tf.train.MomentumOptimizer(self.learning_rate,momentum=0.3)
         self.trainer = optimizer.minimize(self.error,name='Backprop')
 
     def do_training(self,sess,cases,epochs=100,continued=False):
@@ -82,8 +82,7 @@ class Gann():
             self.error_history.append((step, error/nmb))
             self.consider_validation_testing(step,sess)
         self.global_training_step += epochs
-        TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",
-                                  title="error history",fig=not(continued))
+        TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",title="error history",fig=not(continued))
 
     # bestk = 1 when you're doing a classification task and the targets are one-hot vectors.  This will invoke the
     # gen_match_counter error function. Otherwise, when
@@ -101,7 +100,7 @@ class Gann():
             print('%s Set Error = %f ' % (msg, testres))
         else:
             print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
-        return testres  # self.error uses MSE, so this is a per-case value when bestk=None
+        return testres/len(cases)  # self.error uses MSE, so this is a per-case value when bestk=None
 
     # Logits = tensor, float - [batch_size, NUM_CLASSES].
     # labels: Labels tensor, int32 - [batch_size], with values in range [0, NUM_CLASSES).
@@ -125,7 +124,8 @@ class Gann():
     def testing_session(self,sess,bestk=None):
         cases = self.caseman.get_testing_cases()
         if len(cases) > 0:
-            self.do_testing(sess,cases,msg='Final Testing',bestk=bestk)
+            result = self.do_testing(sess,cases,msg='Final Testing',bestk=bestk)
+        return result
 
     def consider_validation_testing(self,epoch,sess):
         if self.validation_interval and (epoch % self.validation_interval == 0):
@@ -145,11 +145,13 @@ class Gann():
         sess = session if session else TFT.gen_initialized_session(dir=dir)
         if probed_vars is not None:
             results = sess.run([operators, grabbed_vars, probed_vars], feed_dict=feed_dict)
-            sess.probe_stream.add_summary(results[2], global_step=step)
         else:
             results = sess.run([operators, grabbed_vars], feed_dict=feed_dict)
         if show_interval and (step % show_interval == 0):
             self.display_grabvars(results[1], grabbed_vars, step=step)
+            if probed_vars is not None:
+                sess.probe_stream.add_summary(results[2], global_step=step)
+
         return results[0], results[1], sess
 
     # experimental Mapping method
@@ -180,9 +182,10 @@ class Gann():
         PLT.ion()
         self.training_session(epochs,sess=sess,continued=continued)
         self.test_on_trains(sess=self.current_session,bestk=bestk)
-        self.testing_session(sess=self.current_session,bestk=bestk)
-        self.close_current_session(view=False)
+        result = self.testing_session(sess=self.current_session,bestk=bestk)
+        self.close_current_session(view=True)
         PLT.ioff()
+        return result
 
     # After a run is complete, runmore allows us to do additional training on the network, picking up where we
     # left off after the last call to run (or runmore).  Use of the "continued" parameter (along with
@@ -243,10 +246,10 @@ class Gannmodule():
 
     def build(self):
         mona = self.name; n = self.outsize
-        self.weights = tf.Variable(np.random.uniform(-.1, .1, size=(self.insize,n)),
-                                   name=mona+'-wgt',trainable=True) # True = default for trainable anyway
-        self.biases = tf.Variable(np.random.uniform(-.1, .1, size=n),
-                                  name=mona+'-bias', trainable=True)  # First bias vector
+        self.weights = tf.Variable(tf.random_uniform([self.insize, self.outsize], minval=-.1, maxval=.1, dtype=tf.float64), name=mona+'-wgt', trainable=True)
+        #self.weights = tf.Variable(np.random.uniform(-.1, .1, size=(self.insize,n)),name=mona+'-wgt',trainable=True) # True = default for trainable anyway
+        self.biases = tf.Variable(tf.zeros([1, self.outsize], dtype=tf.float64) + 0.1, name='b', trainable=True)
+        #self.biases = tf.Variable(np.random.uniform(-.1, .1, size=n),name=mona+'-bias', trainable=True)  # First bias vector
         self.output = getattr(tf.nn, self.activation_func)(tf.matmul(self.input, self.weights) + self.biases, name=mona + '-out')
         self.ann.add_module(self)
 
@@ -304,7 +307,7 @@ class Caseman():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def autoex(epochs=300,nbits=4,lrate=0.0004,showint=100,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=True,bestk=5):
+def autoex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=True,bestk=1):
     size = 2**nbits
     mbs = mbs if mbs else size
     case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
@@ -353,49 +356,48 @@ def mapping_test(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=10,vfrac=0.1,tfra
     #TFT.dendrogram(activation,targets)
 
 
-def autoex_parity(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
-    size = nbits
-    mbs = mbs if mbs else size
-    case_generator = (lambda : TFT.gen_all_parity_cases(nbits))
-    cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=[size, 2**nbits, 2], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
-    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
-    ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
-    ann.run(epochs)
 
-    # Test dendogram functionality
-    cases = ann.caseman.get_training_cases()
-    inputs = [c[0] for c in cases]
-    targets = [c[1] for c in cases]
-    feeder = {ann.input: inputs, ann.target: targets}
-    ann.display_dendogram(1,feeder)
-    return ann
-
-
-def autoex_counter(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tfrac=0.1,vint=100,sm=True):
-    size = 15
-    mbs = mbs if mbs else size
-    case_generator = (lambda : TFT.gen_vector_count_cases(500,15))
-    cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=[size, 15, 2], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
-    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
-    ann.add_grabvar(0,'wgt') # Add a grabvar (to be displayed in its own matplotlib window).
-    ann.run(epochs)
-
-    # Test dendogram functionality
-    cases = ann.caseman.get_training_cases()
-    inputs = [c[0] for c in cases]
-    targets = [c[1] for c in cases]
-    feeder = {ann.input: inputs, ann.target: targets}
-    ann.display_dendogram(1,feeder)
-    return ann
-
-def countex(epochs=15000,nbits=10,ncases=500,lrate=0.00006,showint=5000,mbs=20,vfrac=0.1,tfrac=0.1,vint=200,sm=True,bestk=1):
+def countex(dims=[42,42,42,42] ,epochs=5584,nbits=15,ncases=500,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=600,sm=True,bestk=1,activation_func=None):
     case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    ann = Gann(dims=[nbits, nbits*3, nbits+1], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    ann.add_grabvar(0, 'wgt')
+    result = ann.run(epochs,bestk=bestk)
+    print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
+    return result
+
+
+def countex_org(epochs=14793,nbits=10,ncases=500,lrate=0.2,showint=200,mbs=20,vfrac=0.1,tfrac=0.1,vint=1000,sm=True,bestk=1):
+    case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
+    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+    ann = Gann(dims=[nbits, nbits*3, nbits*3, nbits+1], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
     ann.run(epochs,bestk=bestk)
     print("lrate: "+str(lrate))
     return ann
 
 
+def wine_classifier(dims=[11,6] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=600,sm=True,bestk=1,activation_func=None):
+    case_generator = (lambda: TFT.gen_wine_cases())
+    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    result = ann.run(epochs,bestk=bestk)
+    print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
+    return result
+
+def glass_classifier(dims=[9,6] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac=0.1,tfrac=0.1,vint=600,sm=True,bestk=1,activation_func=None):
+    case_generator = (lambda: TFT.gen_glass_cases())
+    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    ann.add_grabvar(0, 'wgt')
+    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
+    result = ann.run(epochs,bestk=bestk)
+    print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
+    return result
+
+def yeast_classifier(dims=[8,10] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac=0.1,tfrac=0.1,vint=6000,sm=True,bestk=1,activation_func=None):
+    case_generator = (lambda: TFT.gen_yeast_cases())
+    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    result = ann.run(epochs,bestk=bestk)
+    print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
+    return result

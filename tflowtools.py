@@ -213,6 +213,58 @@ def gen_random_line_cases(num_cases,dims,min_lines=1,min_opens=1,bias=1.0, mode=
         line_item = float(line_item); background = float(background)
     return [gen_case() for i in range(num_cases)]
 
+
+# Imports all the winequality cases
+def gen_wine_cases():
+
+    quality_mapping = {3:0,4:1,5:2,6:3,7:4,8:5}
+
+    f = open('datasets/winequality_red.txt','r')
+    features, labels = ([],[])
+    for line in f:
+        split_line = list(map(float,line.split(";")))
+        features.append(split_line[:len(split_line)-1])
+        labels.append( quality_mapping[split_line[-1]])
+    features = np.array(features)
+    features_norm = features/features.max(0)
+    output = []
+    for i in range(len(features_norm)):
+        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    return output
+
+# import all the glass cases
+def gen_glass_cases():
+
+    quality_mapping = {1:0,2:1,3:2,5:3,6:4,7:5}
+
+    f = open('datasets/glass.txt','r')
+    features, labels = ([],[])
+    for line in f:
+        split_line = list(map(float,line.split(",")))
+        features.append(split_line[:len(split_line)-1])
+        labels.append( quality_mapping[split_line[-1]])
+    features = np.array(features)
+    features_norm = features/features.max(0)
+    output = []
+    for i in range(len(features_norm)):
+        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    return output
+
+# import all the yeast cases
+def gen_yeast_cases():
+    f = open('datasets/yeast.txt','r')
+    features, labels = ([],[])
+    for line in f:
+        split_line = list(map(float,line.split(",")))
+        features.append(split_line[:len(split_line)-1])
+        labels.append(split_line[-1]-1)
+    features = np.array(features)
+    features_norm = features/features.max(0)
+    output = []
+    for i in range(len(features_norm)):
+        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    return output
+
 # ********** SEGMENT VECTORS **********
 # These have groups/segments/blobs of "on" bits interspersed in a background of "off" bits.  The key point is that we can
 # specify the number of segments, but the sizes are chosen randomly.
@@ -358,7 +410,6 @@ def hinton_plot(matrix, maxval=None, maxsize=1, fig=None,trans=True,scale=True, 
         axes.add_patch(blob)
     axes.autoscale_view()
     PLT.draw()
-    PLT.pause(.001)
 
 # This graphically displays a matrix with color codes for positive, negative, small positive and small negative,
 # with the latter 2 defined by the 'cutoff' argument.  The transpose (trans) arg defaults to

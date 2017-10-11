@@ -100,7 +100,7 @@ class Gann():
             print('%s Set Error = %f ' % (msg, testres))
         else:
             print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
-        return testres/len(cases)  # self.error uses MSE, so this is a per-case value when bestk=None
+        return testres  # self.error uses MSE, so this is a per-case value when bestk=None
 
     # Logits = tensor, float - [batch_size, NUM_CLASSES].
     # labels: Labels tensor, int32 - [batch_size], with values in range [0, NUM_CLASSES).
@@ -391,12 +391,11 @@ def autoex_counter(epochs=300,nbits=10,lrate=0.1,showint=100,mbs=50,vfrac=0.1,tf
     ann.display_dendogram(1,feeder)
     return ann
 
-def countex(dims=[42,42,42,42] ,epochs=5584,nbits=15,ncases=500,lrate=0.45,showint=10000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1):
+def countex(dims=[42,42,42,42] ,epochs=5584,nbits=15,ncases=500,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=400,sm=True,bestk=1,activation_func=None):
     case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
-    #ann.add_grabvar(0, 'wgt')
-    #ann.add_grabvar(1, 'wgt')
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    ann.add_grabvar(0, 'wgt')
     result = ann.run(epochs,bestk=bestk)
     print("lrate: "+str(lrate))
     return result
