@@ -23,33 +23,48 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
-import os
 import sys
+import random
 
 import tensorflow as tf
-
-from tensorflow.examples.tutorials.mnist import input_data
+import tflowtools as TFT
 
 FLAGS = None
 
+class case_holder:
+    def __init__(self,dataset,tfrac=0.1):
+        self.test_features = []
+        self.test_labels = []
+        for x in range(round(len(dataset)*tfrac)):
+            i = random.randint(0, len(dataset) - 1)
+            popped = dataset.pop(i)
+            self.test_features.append(popped[0])
+            self.test_labels.append(popped[1])
+        self.dataset = dataset
 
-def train():
+    def train_next_batch(self,size=100):
+        features = []
+        labels = []
+        for _ in range(size):
+            i = random.randint(0, len(self.dataset) - 1)
+            features.append(self.dataset[i][0])
+            labels.append(self.dataset[i][1])
+        return features, labels
+
+
+
+def train(dims=[9,27,27,27,27,9,6]):
   # Import data
-  mnist = input_data.read_data_sets(FLAGS.data_dir,
-                                    one_hot=True,
-                                    fake_data=FLAGS.fake_data)
+  mnist = case_holder(dataset=TFT.gen_glass_cases())
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
 
   # Input placeholders
   with tf.name_scope('input'):
-    x = tf.placeholder(tf.float32, [None, 784], name='x-input')
-    y_ = tf.placeholder(tf.float32, [None, 10], name='y-input')
+    x = tf.placeholder(tf.float32, [None, dims[0]], name='x-input')
+    y_ = tf.placeholder(tf.float32, [None, dims[-1]], name='y-input')
 
-  with tf.name_scope('input_reshape'):
-    image_shaped_input = tf.reshape(x, [-1, 28, 28, 1])
-    tf.summary.image('input', image_shaped_input, 10)
 
   # We can't initialize these variables to 0 - the network will get stuck.
   def weight_variable(shape):
@@ -96,15 +111,21 @@ def train():
       tf.summary.histogram('activations', activations)
       return activations
 
-  hidden1 = nn_layer(x, 784, 500, 'layer1')
+
+
+  previous_layer = x
+  layers = []
+  for i in range(1,len(dims)):
+      layers.append(nn_layer(previous_layer,dims[i-1],dims[i],'layer'+str(i),act=tf.nn.relu))
+      previous_layer = layers[-1]
 
   with tf.name_scope('dropout'):
     keep_prob = tf.placeholder(tf.float32)
     tf.summary.scalar('dropout_keep_probability', keep_prob)
-    dropped = tf.nn.dropout(hidden1, keep_prob)
+    dropped = tf.nn.dropout(layers[-1], keep_prob)
 
   # Do not apply softmax activation yet, see below.
-  y = nn_layer(dropped, 500, 10, 'layer2', act=tf.identity)
+  y = nn_layer(dropped, dims[-1], dims[-1], 'last_layer', act=tf.identity)
 
   with tf.name_scope('cross_entropy'):
     # The raw formulation of cross-entropy,
@@ -147,10 +168,10 @@ def train():
   def feed_dict(train):
     """Make a TensorFlow feed_dict: maps data onto Tensor placeholders."""
     if train or FLAGS.fake_data:
-      xs, ys = mnist.train.next_batch(100, fake_data=FLAGS.fake_data)
+      xs, ys = mnist.train_next_batch(100)
       k = FLAGS.dropout
     else:
-      xs, ys = mnist.test.images, mnist.test.labels
+      xs, ys = mnist.test_features, mnist.test_labels
       k = 1.0
     return {x: xs, y_: ys, keep_prob: k}
 
@@ -191,7 +212,7 @@ if __name__ == '__main__':
                       help='If true, uses fake data for unit testing.')
   parser.add_argument('--max_steps', type=int, default=1000,
                       help='Number of steps to run trainer.')
-  parser.add_argument('--learning_rate', type=float, default=0.001,
+  parser.add_argument('--learning_rate', type=float, default=0.01,
                       help='Initial learning rate')
   parser.add_argument('--dropout', type=float, default=0.9,
                       help='Keep probability for training dropout.')
