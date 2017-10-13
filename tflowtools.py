@@ -1,6 +1,4 @@
-# The functions in this file are used to generate datasets for machine-learning problems.
-
-import tensorflow as tf
+from sklearn import preprocessing
 import numpy as np
 import copy
 import os  # For starting up tensorboard from inside python
@@ -226,10 +224,10 @@ def gen_wine_cases():
         features.append(split_line[:len(split_line)-1])
         labels.append( quality_mapping[split_line[-1]])
     features = np.array(features)
-    features_norm = features/features.max(0)
+    features_scale = preprocessing.scale(features)
     output = []
-    for i in range(len(features_norm)):
-        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    for i in range(len(features_scale)):
+        output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),6)])
     return output
 
 # import all the glass cases
@@ -244,10 +242,10 @@ def gen_glass_cases():
         features.append(split_line[:len(split_line)-1])
         labels.append( quality_mapping[split_line[-1]])
     features = np.array(features)
-    features_norm = features/features.max(0)
+    features_scale = preprocessing.scale(features)
     output = []
-    for i in range(len(features_norm)):
-        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    for i in range(len(features_scale)):
+        output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),6)])
     return output
 
 # import all the yeast cases
@@ -259,10 +257,10 @@ def gen_yeast_cases():
         features.append(split_line[:len(split_line)-1])
         labels.append(split_line[-1]-1)
     features = np.array(features)
-    features_norm = features/features.max(0)
+    features_scale = preprocessing.scale(features)
     output = []
-    for i in range(len(features_norm)):
-        output.append([features_norm[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    for i in range(len(features_scale)):
+        output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),10)])
     return output
 
 # ********** SEGMENT VECTORS **********

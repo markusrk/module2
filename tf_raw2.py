@@ -53,9 +53,9 @@ class case_holder:
 
 
 
-def train(dims=[9,27,27,27,27,9,6]):
+def train(dims=[11,100,6]):
   # Import data
-  mnist = case_holder(dataset=TFT.gen_glass_cases())
+  mnist = case_holder(dataset=TFT.gen_wine_cases())
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
@@ -168,7 +168,7 @@ def train(dims=[9,27,27,27,27,9,6]):
   def feed_dict(train):
     """Make a TensorFlow feed_dict: maps data onto Tensor placeholders."""
     if train or FLAGS.fake_data:
-      xs, ys = mnist.train_next_batch(100)
+      xs, ys = mnist.train_next_batch(20)
       k = FLAGS.dropout
     else:
       xs, ys = mnist.test_features, mnist.test_labels

@@ -62,7 +62,7 @@ class Gann():
         self.error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.output, name="cross_entropy_error"))
         self.predictor = self.output  # Simple prediction runs will request the value of output neurons
         # Defining the training operator
-        optimizer = tf.train.MomentumOptimizer(self.learning_rate,momentum=0.3)
+        optimizer = tf.train.AdamOptimizer(self.learning_rate)
         self.trainer = optimizer.minimize(self.error,name='Backprop')
 
     def do_training(self,sess,cases,epochs=100,continued=False):
@@ -82,7 +82,7 @@ class Gann():
             self.error_history.append((step, error/nmb))
             self.consider_validation_testing(step,sess)
         self.global_training_step += epochs
-        TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",title="error history",fig=not(continued))
+        #TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",title="error history",fig=not(continued))
 
     # bestk = 1 when you're doing a classification task and the targets are one-hot vectors.  This will invoke the
     # gen_match_counter error function. Otherwise, when
@@ -183,7 +183,7 @@ class Gann():
         self.training_session(epochs,sess=sess,continued=continued)
         self.test_on_trains(sess=self.current_session,bestk=bestk)
         result = self.testing_session(sess=self.current_session,bestk=bestk)
-        self.close_current_session(view=True)
+        self.close_current_session(view=False)
         PLT.ioff()
         return result
 
@@ -394,7 +394,7 @@ def glass_classifier(dims=[9,6] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac
     print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
     return result
 
-def yeast_classifier(dims=[8,10] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac=0.1,tfrac=0.1,vint=6000,sm=True,bestk=1,activation_func=None):
+def yeast_classifier(dims=[8,10] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=6000,sm=True,bestk=1,activation_func=None):
     case_generator = (lambda: TFT.gen_yeast_cases())
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
     ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
