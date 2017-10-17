@@ -58,9 +58,9 @@ class case_holder:
 
 
 
-def train(dims=[15,40,20,16]):
+def train(dims=[25,40,20,9]):
   # Import data
-  mnist = case_holder(dataset=TFT.gen_vector_count_cases(500,15))
+  mnist = case_holder(dataset=TFT.gen_segmented_vector_cases(25,1000,0,8))
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
