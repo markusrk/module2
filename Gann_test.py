@@ -7,9 +7,14 @@ import tflowtools as TFT
 # ******* A General Artificial Neural Network ********
 # This is the original GANN, which has been improved in the file gann.py
 
+class AccuracyReachedException(Exception):
+    pass
+
 class Gann():
 
-    def __init__(self, dims, cman, activation_func=None, lrate=.1,showint=None,mbs=10,vint=None,softmax=False):
+    def __init__(self, dims, cman, activation_func=None, lrate=.1,showint=None,mbs=10,vint=None,softmax=False,bint=200,alvl=0.95):
+        self.accuracy_level = alvl
+        self.bint = bint
         self.activation_func = activation_func
         self.learning_rate = lrate
         self.layer_sizes = dims # Sizes of each layer of neurons
@@ -62,7 +67,7 @@ class Gann():
         self.error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.output, name="cross_entropy_error"))
         self.predictor = self.output  # Simple prediction runs will request the value of output neurons
         # Defining the training operator
-        optimizer = tf.train.AdamOptimizer(self.learning_rate)
+        optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
         self.trainer = optimizer.minimize(self.error,name='Backprop')
 
     def do_training(self,sess,cases,epochs=100,continued=False):
@@ -81,8 +86,10 @@ class Gann():
                 error += grabvals[0]
             self.error_history.append((step, error/nmb))
             self.consider_validation_testing(step,sess)
+            # test if training set error is above requirement and breaks if it is
+            self.break_testing(step,sess)
         self.global_training_step += epochs
-        #TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",title="error history",fig=not(continued))
+        TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",title="error history",fig=not(continued))
 
     # bestk = 1 when you're doing a classification task and the targets are one-hot vectors.  This will invoke the
     # gen_match_counter error function. Otherwise, when
@@ -134,6 +141,14 @@ class Gann():
                 error = self.do_testing(sess,cases,msg='Validation Testing')
                 self.validation_history.append((epoch,error))
 
+    def break_testing(self,epoch,sess):
+        if self.bint and (epoch % self.bint == 0):
+            cases = self.caseman.get_training_cases()
+            if len(cases) > 0:
+                accuracy = self.do_testing(sess,cases,msg='Training',bestk=1)
+            if accuracy >= 0.95:
+                raise AccuracyReachedException(Exception)
+
     # Do testing (i.e. calc error without learning) on the training set.
     def test_on_trains(self,sess,bestk=None):
         self.do_testing(sess,self.caseman.get_training_cases(),msg='Total Training',bestk=bestk)
@@ -180,7 +195,9 @@ class Gann():
 
     def run(self,epochs=100,sess=None,continued=False,bestk=None):
         PLT.ion()
-        self.training_session(epochs,sess=sess,continued=continued)
+        try:
+            self.training_session(epochs,sess=sess,continued=continued)
+        except: pass
         self.test_on_trains(sess=self.current_session,bestk=bestk)
         result = self.testing_session(sess=self.current_session,bestk=bestk)
         self.close_current_session(view=False)
@@ -376,10 +393,10 @@ def countex_org(epochs=14793,nbits=10,ncases=500,lrate=0.2,showint=200,mbs=20,vf
     return ann
 
 
-def wine_classifier(dims=[11,6] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=600,sm=True,bestk=1,activation_func=None):
+def wine_classifier(dims=[11,6] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=200,sm=True,bestk=1,activation_func=None,bint=20):
     case_generator = (lambda: TFT.gen_wine_cases())
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func,bint=bint)
     result = ann.run(epochs,bestk=bestk)
     print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
     return result
@@ -388,16 +405,16 @@ def glass_classifier(dims=[9,6] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac
     case_generator = (lambda: TFT.gen_glass_cases())
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
     ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
-    ann.add_grabvar(0, 'wgt')
-    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
+#   ann.add_grabvar(0, 'wgt')
+#    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
     result = ann.run(epochs,bestk=bestk)
     print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
     return result
 
-def yeast_classifier(dims=[8,10] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=6000,sm=True,bestk=1,activation_func=None):
+def yeast_classifier(dims=[8,10] ,epochs=5584,lrate=0.45,showint=20000,mbs=20,vfrac=0.1,tfrac=0.1,vint=6000,bint=200,sm=True,bestk=1,activation_func=None):
     case_generator = (lambda: TFT.gen_yeast_cases())
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
+    ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func,bint=bint)
     result = ann.run(epochs,bestk=bestk)
     print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))
     return result

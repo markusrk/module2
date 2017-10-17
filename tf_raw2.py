@@ -53,7 +53,7 @@ class case_holder:
 
 
 
-def train(dims=[11,100,6]):
+def train(dims=[11,29,29,29,6]):
   # Import data
   mnist = case_holder(dataset=TFT.gen_wine_cases())
 
@@ -89,7 +89,7 @@ def train(dims=[11,100,6]):
       tf.summary.scalar('min', tf.reduce_min(var))
       tf.summary.histogram('histogram', var)
 
-  def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu):
+  def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.tanh):
     """Reusable code for making a simple neural net layer.
     It does a matrix multiply, bias add, and then uses ReLU to nonlinearize.
     It also sets up name scoping so that the resultant graph is easy to read,
@@ -144,7 +144,7 @@ def train(dims=[11,100,6]):
   tf.summary.scalar('cross_entropy', cross_entropy)
 
   with tf.name_scope('train'):
-    train_step = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(
+    train_step = tf.train.GradientDescentOptimizer(FLAGS.learning_rate).minimize(
         cross_entropy)
 
   with tf.name_scope('accuracy'):
@@ -168,7 +168,7 @@ def train(dims=[11,100,6]):
   def feed_dict(train):
     """Make a TensorFlow feed_dict: maps data onto Tensor placeholders."""
     if train or FLAGS.fake_data:
-      xs, ys = mnist.train_next_batch(20)
+      xs, ys = mnist.train_next_batch(1300)
       k = FLAGS.dropout
     else:
       xs, ys = mnist.test_features, mnist.test_labels
@@ -177,9 +177,10 @@ def train(dims=[11,100,6]):
 
   for i in range(FLAGS.max_steps):
     if i % 10 == 0:  # Record summaries and test-set accuracy
-      summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict(False))
+      summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict(True)) # todo must change feed_dict back to false if accuracy is supposed to be on testing data
       test_writer.add_summary(summary, i)
       print('Accuracy at step %s: %s' % (i, acc))
+      if acc >= 0.95: break
     else:  # Record train set summaries, and train
       if i % 100 == 99:  # Record execution stats
         run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
@@ -210,9 +211,9 @@ if __name__ == '__main__':
   parser.add_argument('--fake_data', nargs='?', const=True, type=bool,
                       default=False,
                       help='If true, uses fake data for unit testing.')
-  parser.add_argument('--max_steps', type=int, default=1000,
+  parser.add_argument('--max_steps', type=int, default=10000,
                       help='Number of steps to run trainer.')
-  parser.add_argument('--learning_rate', type=float, default=0.01,
+  parser.add_argument('--learning_rate', type=float, default=0.5,
                       help='Initial learning rate')
   parser.add_argument('--dropout', type=float, default=0.9,
                       help='Keep probability for training dropout.')

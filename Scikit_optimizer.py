@@ -4,11 +4,11 @@ from skopt.plots import plot_convergence
 import datetime
 import matplotlib.pyplot as plt
 
-dataset = 'yeast'
+dataset = 'wine'
 
 # dict for different runs
-export_names = {'bit':'bit2','yeast':'yeast2','glass':'glass2','wine':'wine2'}
-scikit_names = {'bit':'bit2','yeast': 'yeast2','glass':'glass2','wine':'wine2'}
+export_names = {'bit':'bit2','yeast':'yeast_MO','glass':'glass_MO','wine':'wine_MO'}
+scikit_names = {'bit':'bit2','yeast': 'yeast_MO','glass':'glass_MO','wine':'wine_MO'}
 classifier_names = {'bit':'countex','yeast':'yeast_classifier','glass':'glass_classifier','wine':'wine_classifier'}
 insizes = {'bit':15,'glass':9,'yeast':8,'wine':11}
 outsizes = {'bit':16,'glass':6,'yeast':10,'wine':6}
@@ -31,14 +31,14 @@ def f(params):
     nodes = [layer_size] * dims
     nodes.insert(0, insize)
     nodes.append(outsize)
-    r1 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs)
-    r2 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs)
-    r3 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs)
+    r1 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs,showint=20000,vint=20000)
+    r2 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs,showint=20000,vint=20000)
+    r3 = -getattr(Ann, classifier_name)(epochs=epochs, lrate=lrate, dims=nodes,activation_func=act_func,mbs=mbs,showint=20000,vint=20000)
     avg_score = (r1+r2+r3)/3
     return avg_score
 
 # Search space
-space=[(200,1000)# epochs
+space=[(200,3000)# epochs
     ,(0.001,0.04) # lrate
     ,(0,4)    # dimensions
     ,(0,45)  # layer size

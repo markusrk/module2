@@ -5,7 +5,7 @@ import os  # For starting up tensorboard from inside python
 import matplotlib.pyplot as PLT
 import scipy.cluster.hierarchy as SCH  # Needed for dendrograms
 import numpy.random as NPR
-import time
+import tensorflow as tf
 
 # ****** SESSION HANDLING *******
 
