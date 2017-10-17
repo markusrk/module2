@@ -145,7 +145,7 @@ class Gann():
         if self.bint and (epoch % self.bint == 0):
             cases = self.caseman.get_training_cases()
             if len(cases) > 0:
-                accuracy = self.do_testing(sess,cases,msg='Training',bestk=1)
+                accuracy = self.do_testing(sess,cases,msg='Training at '+str(epoch)+" ",bestk=1)
             if accuracy >= 0.95:
                 raise AccuracyReachedException(Exception)
 

@@ -28,6 +28,7 @@ import random
 
 import tensorflow as tf
 import tflowtools as TFT
+from copy import deepcopy
 
 FLAGS = None
 
@@ -42,6 +43,9 @@ class case_holder:
             self.test_labels.append(popped[1])
         self.dataset = dataset
 
+    def train_full_batch(self,size=100):
+        return self.test_features,self.test_labels
+
     def train_next_batch(self,size=100):
         features = []
         labels = []
@@ -53,9 +57,10 @@ class case_holder:
 
 
 
-def train(dims=[11,29,29,29,6]):
+
+def train(dims=[15,40,20,16]):
   # Import data
-  mnist = case_holder(dataset=TFT.gen_wine_cases())
+  mnist = case_holder(dataset=TFT.gen_vector_count_cases(500,15))
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
@@ -168,7 +173,7 @@ def train(dims=[11,29,29,29,6]):
   def feed_dict(train):
     """Make a TensorFlow feed_dict: maps data onto Tensor placeholders."""
     if train or FLAGS.fake_data:
-      xs, ys = mnist.train_next_batch(1300)
+      xs, ys = mnist.train_full_batch()
       k = FLAGS.dropout
     else:
       xs, ys = mnist.test_features, mnist.test_labels
