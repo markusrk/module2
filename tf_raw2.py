@@ -58,9 +58,9 @@ class case_holder:
 
 
 
-def train(dims=[25,40,20,9]):
+def train(dims=[15,40,20,16]):
   # Import data
-  mnist = case_holder(dataset=TFT.gen_segmented_vector_cases(25,1000,0,8))
+  mnist = case_holder(dataset=TFT.gen_vector_count_cases(500,15))
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
@@ -185,7 +185,7 @@ def train(dims=[25,40,20,9]):
       summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict(True)) # todo must change feed_dict back to false if accuracy is supposed to be on testing data
       test_writer.add_summary(summary, i)
       print('Accuracy at step %s: %s' % (i, acc))
-      if acc >= 0.95: break
+      if acc >= 0.975: break
     else:  # Record train set summaries, and train
       if i % 100 == 99:  # Record execution stats
         run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
