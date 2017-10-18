@@ -55,12 +55,22 @@ class case_holder:
             labels.append(self.dataset[i][1])
         return features, labels
 
+class MNIST_holder:
 
 
+    def __init__(self,cases=1000):
+        from tensorflow.examples.tutorials.mnist import input_data
+        self.cases = cases
+        self.mnist = input_data.read_data_sets("datasets/MNIST/", one_hot=True)
+        self.features, self.labels = self.mnist.train.next_batch(self.cases)
 
-def train(dims=[15,40,20,16]):
+    def train_full_batch(self):
+        return self.features, self.labels
+
+
+def train(dims=[784,500,10]):
   # Import data
-  mnist = case_holder(dataset=TFT.gen_vector_count_cases(500,15))
+  mnist = MNIST_holder(cases=1000)
 
   sess = tf.InteractiveSession()
   # Create a multilayer model.
