@@ -405,7 +405,7 @@ def glass_classifier(dims=[9,6] ,epochs=5584,lrate=0.45,showint=200,mbs=20,vfrac
     case_generator = (lambda: TFT.gen_glass_cases())
     cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
     ann = Gann(dims=dims, cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm,activation_func=activation_func)
-#   ann.add_grabvar(0, 'wgt')
+    ann.add_grabvar(0, 'wgt')
 #    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
     result = ann.run(epochs,bestk=bestk)
     print("epochs: "+str(epochs)+" lrate: "+str(lrate)+" dims: "+str(dims))

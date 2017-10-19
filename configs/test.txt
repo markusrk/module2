@@ -1,11 +1,12 @@
 {
     "mbs": 1277,
     "activation_func": "tanh",
+    "acc_lim": 0.95,
     "vfrac": 0.1,
     "epochs": 10000,
     "map_bs": 20,
     "lr": 0.5,
-    "dendogram_layers": null,
+    "dendogram_layers": 2,
     "initial_weight_range": "scaled",
     "dims": [
         11,
