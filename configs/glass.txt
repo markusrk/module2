@@ -1,0 +1,23 @@
+{
+    "acc_lim": 0.95,
+    "activation_func": "tanh",
+    "mbs": 170,
+    "cost_func": "CE",
+    "dims": [
+        9,
+        40,
+        20,
+        6
+    ],
+    "lr": 0.5,
+    "vfrac": 0.1,
+    "data_source": "gen_glass_cases",
+    "map_layers": null,
+    "tfrac": 0.1,
+    "softmax": true,
+    "dendogram_layers": null,
+    "map_bs": 20,
+    "case_count": null,
+    "epochs": 10000,
+    "initial_weight_range": "scaled"
+}

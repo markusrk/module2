@@ -147,7 +147,7 @@ def gen_line_array(dims,indices,line_item=1,background=0,columns=False,bias=1.0)
 
 # The simplest autoencoders use the set of one-hot vectors as inputs and target outputs.
 
-def gen_all_one_hot_cases(len, floats=False):
+def gen_all_one_hot_cases(len, floats=False,case_count=None):
     return [[c,c] for c in all_one_hots(len,floats=floats)]
 
 # This creates autoencoder cases for vector's with any density of 1's (specified by density_range).
@@ -158,7 +158,7 @@ def gen_dense_autoencoder_cases(count,size,dr=(0,1)):
 # the parity bit: 0 => an even number of 1's, 1 => odd number of 1's.  When double=True, a 2-bit vector is the
 # target, with bit 0 indicating even parity and bit 1 indicating odd parity.
 
-def gen_all_parity_cases(num_bits, double=True):
+def gen_all_parity_cases(num_bits=10,case_count=None, double=True):
     def parity(v): return sum(v) % 2
     def target(v):
         if double:
@@ -173,7 +173,7 @@ def gen_all_parity_cases(num_bits, double=True):
 # the number of 1's in the feature vector(default) or simply the count label.  Note that the target vector is one bit
 # larger than the feature vector to account for the case of a zero-sum feature vector.
 
-def gen_vector_count_cases(num,size,drange=(0,1),random=True,poptarg=True):
+def gen_vector_count_cases(size,num=15,drange=(0,1),random=True,poptarg=True):
     if random: feature_vectors = gen_random_density_vectors(num,size,density_range=drange)
     else: feature_vectors = gen_all_bit_vectors(size)
     if poptarg:
@@ -213,7 +213,7 @@ def gen_random_line_cases(num_cases,dims,min_lines=1,min_opens=1,bias=1.0, mode=
 
 
 # Imports all the winequality cases
-def gen_wine_cases():
+def gen_wine_cases(case_count=None):
 
     quality_mapping = {3:0,4:1,5:2,6:3,7:4,8:5}
 
@@ -228,10 +228,12 @@ def gen_wine_cases():
     output = []
     for i in range(len(features_scale)):
         output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    if case_count:
+        return output[:case_count]
     return output
 
 # import all the glass cases
-def gen_glass_cases():
+def gen_glass_cases(case_count=None):
 
     quality_mapping = {1:0,2:1,3:2,5:3,6:4,7:5}
 
@@ -246,10 +248,12 @@ def gen_glass_cases():
     output = []
     for i in range(len(features_scale)):
         output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),6)])
+    if case_count:
+        return output[:case_count]
     return output
 
 # import all the yeast cases
-def gen_yeast_cases():
+def gen_yeast_cases(case_count=None):
     f = open('datasets/yeast.txt','r')
     features, labels = ([],[])
     for line in f:
@@ -261,6 +265,8 @@ def gen_yeast_cases():
     output = []
     for i in range(len(features_scale)):
         output.append([features_scale[i].tolist(),int_to_one_hot(int(labels[i]),10)])
+    if case_count:
+        return output[:case_count]
     return output
 
 # ********** SEGMENT VECTORS **********

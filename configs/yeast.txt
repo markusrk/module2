@@ -1,0 +1,23 @@
+{
+    "tfrac": 0.1,
+    "activation_func": "tanh",
+    "cost_func": "CE",
+    "map_bs": 20,
+    "vfrac": 0.1,
+    "case_count": null,
+    "dims": [
+        8,
+        40,
+        20,
+        10
+    ],
+    "epochs": 10000,
+    "dendogram_layers": null,
+    "map_layers": null,
+    "initial_weight_range": "scaled",
+    "data_source": "gen_yeast_cases",
+    "lr": 0.5,
+    "softmax": true,
+    "mbs": 1186,
+    "acc_lim": 1.1
+}

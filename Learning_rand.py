@@ -42,38 +42,38 @@ import matplotlib as PLT
 #     print(cman.get_validation_cases())
 
 
-# import json
+import json
+
+def test_function(v1,v2):
+    print(str(v1+v2))
+
+d = {'dims':[9,40,20,6],
+     'activation_func':'tanh',
+     'softmax':True,
+     'cost_func':'CE',
+     'lr': 0.5,
+     'initial_weight_range':'scaled',
+     'data_source':'gen_glass_cases',
+     'case_count': None,
+     'vfrac':0.1,
+     'tfrac':0.1,
+     'mbs':170,
+     'map_bs':20,
+     'epochs':10000,
+     'map_layers':None,
+     'dendogram_layers':None,
+     'acc_lim': 0.95,
+     }
+f = open("configs/glass.txt",'w')
+json.dump(d,f,indent=4)
+
+
+# import tf_raw3 as raw
+# import tensorflow as tf
 #
-# def test_function(v1,v2):
-#     print(str(v1+v2))
+# y =[[0.,1.]]
+# x =[[5.,5.]]
 #
-# d = {'dims':[8,40,20,10],
-#      'activation_func':'tanh',
-#      'softmax':True,
-#      'cost_func':'CE',
-#      'lr': 0.5,
-#      'initial_weight_range':[-0.1,0.1],
-#      'data_source':'gen_wine_cases',
-#      'cfrac':1,
-#      'vfrac':0.1,
-#      'tfrac':0.1,
-#      'mbs':1277,
-#      'map_bs':20,
-#      'epochs':10000,
-#      'map_layers':None,
-#      'dendogram_layers':None,
-#
-#      }
-# f = open("configs/test.txt",'w')
-# json.dump(d,f,indent=4)
-
-
-import tf_raw3 as raw
-import tensorflow as tf
-
-y =[[0.,1.]]
-x =[[5.,5.]]
-
-sess= tf.InteractiveSession()
-a = raw.CE(y,x)
-print(sess.run(a))
+# sess= tf.InteractiveSession()
+# a = raw.CE(y,x)
+# print(sess.run(a))

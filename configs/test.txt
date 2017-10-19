@@ -1,0 +1,22 @@
+{
+    "mbs": 1277,
+    "activation_func": "tanh",
+    "vfrac": 0.1,
+    "epochs": 10000,
+    "map_bs": 20,
+    "lr": 0.5,
+    "dendogram_layers": null,
+    "initial_weight_range": "scaled",
+    "dims": [
+        11,
+        40,
+        20,
+        6
+    ],
+    "tfrac": 0.1,
+    "map_layers": null,
+    "softmax": true,
+    "case_count": null,
+    "cost_func": "CE",
+    "data_source": "gen_wine_cases"
+}
