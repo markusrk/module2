@@ -1,6 +1,8 @@
 import matplotlib.pyplot as PLT
 import Gann_test
 import tflowtools as TFT
+import numpy as np
+import matplotlib as PLT
 
 #f_and_l = TFT.gen_all_parity_cases(3)
 #f = []
@@ -21,15 +23,57 @@ import tflowtools as TFT
 #gann = Gann_test.yeast_classifier(epochs=2000,dims=[8,24,10],mbs=30,lrate=0.004,activation_func=['relu','relu','relu'],sm=True)
 #PLT.show()
 
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("datasets/MNIST/", one_hot=True)
-print("")
+#from tensorflow.examples.tutorials.mnist import input_data
+#mnist = input_data.read_data_sets("datasets/MNIST/", one_hot=True)
+#print("")
+
+#m =[[1,2],[1,2]]
+#m = np.array(m)
+#p = TFT.hinton_plot(m)
 
 
-def test_case_man():
-    nbits = 4
-    vfrac = 0.1
-    tfrac=0.1
-    case_generator = (lambda: TFT.gen_all_one_hot_cases(2 ** nbits))
-    cman = Gann_test.Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    print(cman.get_validation_cases())
+
+# def test_case_man():
+#     nbits = 4
+#     vfrac = 0.1
+#     tfrac=0.1
+#     case_generator = (lambda: TFT.gen_all_one_hot_cases(2 ** nbits))
+#     cman = Gann_test.Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+#     print(cman.get_validation_cases())
+
+
+# import json
+#
+# def test_function(v1,v2):
+#     print(str(v1+v2))
+#
+# d = {'dims':[8,40,20,10],
+#      'activation_func':'tanh',
+#      'softmax':True,
+#      'cost_func':'CE',
+#      'lr': 0.5,
+#      'initial_weight_range':[-0.1,0.1],
+#      'data_source':'gen_wine_cases',
+#      'cfrac':1,
+#      'vfrac':0.1,
+#      'tfrac':0.1,
+#      'mbs':1277,
+#      'map_bs':20,
+#      'epochs':10000,
+#      'map_layers':None,
+#      'dendogram_layers':None,
+#
+#      }
+# f = open("configs/test.txt",'w')
+# json.dump(d,f,indent=4)
+
+
+import tf_raw3 as raw
+import tensorflow as tf
+
+y =[[0.,1.]]
+x =[[5.,5.]]
+
+sess= tf.InteractiveSession()
+a = raw.CE(y,x)
+print(sess.run(a))

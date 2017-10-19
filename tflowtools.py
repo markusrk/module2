@@ -408,6 +408,7 @@ def hinton_plot(matrix, maxval=None, maxsize=1, fig=None,trans=True,scale=True, 
         axes.add_patch(blob)
     axes.autoscale_view()
     PLT.draw()
+    PLT.show()
 
 # This graphically displays a matrix with color codes for positive, negative, small positive and small negative,
 # with the latter 2 defined by the 'cutoff' argument.  The transpose (trans) arg defaults to
