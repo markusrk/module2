@@ -14,7 +14,7 @@
     "data_source": "gen_glass_cases",
     "map_layers": null,
     "tfrac": 0.1,
-    "softmax": true,
+    "softmax": false,
     "dendogram_layers": null,
     "map_bs": 20,
     "case_count": null,

@@ -19,5 +19,5 @@
     "dendogram_layers": null,
     "initial_weight_range": "scaled",
     "epochs": 10000,
-    "softmax": true
+    "softmax": false
 }

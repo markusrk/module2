@@ -18,7 +18,7 @@ import matplotlib as PLT
 #print(t.op)
 
 #gann = Gann_test.countex(epochs=6000,dims=[15,10,16],mbs=30,lrate=0.002,activation_func=['tanh','tanh'],sm=True)
-#gann = Gann_test.wine_classifier(epochs=10000,dims=[11,40,20,6],mbs=1000,lrate=0.8,activation_func=[ 'tanh', 'tanh', 'tanh', 'tanh'],sm=True)
+#gann = Gann_test.wine_classifier(epochs=10000,dims=[11,40,20,6],mbs=1000,lrate=0.5,activation_func=[ 'tanh', 'tanh', 'tanh', 'tanh'],sm=False)
 #gann = Gann_test.glass_classifier(epochs=3001,dims=[9,27,27,27,27,9,6],mbs=20,lrate=0.2,activation_func=['relu','relu','relu','relu','relu','relu'],sm=True)
 #gann = Gann_test.yeast_classifier(epochs=2000,dims=[8,24,10],mbs=30,lrate=0.004,activation_func=['relu','relu','relu'],sm=True)
 #PLT.show()
@@ -41,31 +41,32 @@ import matplotlib as PLT
 #     cman = Gann_test.Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
 #     print(cman.get_validation_cases())
 
-#
-# import json
-#
-# def test_function(v1,v2):
-#     print(str(v1+v2))
-#
-# d = {'dims':[9,40,20,6],
-#      'activation_func':'tanh',
-#      'softmax':True,
-#      'cost_func':'CE',
-#      'lr': 0.5,
-#      'initial_weight_range':'scaled',
-#      'data_source':'gen_glass_cases',
-#      'case_count': None,
-#      'vfrac':0.1,
-#      'tfrac':0.1,
-#      'mbs':170,
-#      'map_bs':20,
-#      'epochs':100,
-#      'map_layers':None,
-#      'dendogram_layers':None,
-#      'acc_lim': 0.95,
-#      }
-# f = open("configs/fast.txt",'w')
-# json.dump(d,f,indent=4)
+
+import json
+
+def test_function(v1,v2):
+    print(str(v1+v2))
+
+d = {'dims':[4,2,4],
+     'activation_func':'tanh',
+     'softmax':False,
+     'cost_func':'CE',
+     'lr': 0.5,
+     'initial_weight_range':'scaled',
+     'data_source':'gen_all_one_hot_cases',
+     'case_count': None,
+     'vfrac':0,
+     'tfrac':0,
+     'mbs':'full',
+     'map_bs':20,
+     'epochs':10000,
+     'map_layers':None,
+     'dendogram_layers':None,
+     'acc_lim': 1,
+     'vint': 20
+     }
+f = open("configs/auto.txt",'w')
+json.dump(d,f,indent=4, sort_keys=True)
 
 
 # import tf_raw3 as raw
@@ -78,8 +79,8 @@ import matplotlib as PLT
 # a = raw.CE(y,x)
 # print(sess.run(a))
 
-import numpy as np
-
-n = np.array([1,1,1,1])
-for x, v in np.ndenumerate(n):
-     print(str(x)+str(v))
+# import numpy as np
+#
+# n = np.array([1,1,1,1])
+# for x, v in np.ndenumerate(n):
+#      print(str(x)+str(v))

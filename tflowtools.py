@@ -147,7 +147,7 @@ def gen_line_array(dims,indices,line_item=1,background=0,columns=False,bias=1.0)
 
 # The simplest autoencoders use the set of one-hot vectors as inputs and target outputs.
 
-def gen_all_one_hot_cases(len, floats=False,case_count=None):
+def gen_all_one_hot_cases(len=8, floats=False,case_count=None):
     return [[c,c] for c in all_one_hots(len,floats=floats)]
 
 # This creates autoencoder cases for vector's with any density of 1's (specified by density_range).
@@ -269,6 +269,19 @@ def gen_yeast_cases(case_count=None):
         return output[:case_count]
     return output
 
+def gen_mnist_cases(case_count=None):
+    if not case_count:
+        case_count=6000
+    from tensorflow.examples.tutorials.mnist import input_data
+    case_count = case_count
+    mnist = input_data.read_data_sets("datasets/MNIST/", one_hot=True)
+    features, labels = mnist.train.next_batch(case_count)
+    combined = []
+    for x in range(len(features)):
+        combined.append([features[x],labels[x]])
+    return combined
+
+
 # ********** SEGMENT VECTORS **********
 # These have groups/segments/blobs of "on" bits interspersed in a background of "off" bits.  The key point is that we can
 # specify the number of segments, but the sizes are chosen randomly.
@@ -310,9 +323,11 @@ def gen_segment_locs(maxlen,seg_sizes):
 # This is the high-level routine for creating the segmented-vector cases.  As long as poptargs=True, a
 # population-coded (i.e. one-hot) vector will be created as the target vector for each case.
 
-def gen_segmented_vector_cases(vectorlen,count,minsegs,maxsegs,poptargs=True):
+def gen_segmented_vector_cases(case_count=1000,vectorlen=25,minsegs=0,maxsegs=8,poptargs=True):
     cases = []
-    for c in range(count):
+    if not case_count:
+        case_count = 1000
+    for c in range(case_count):
         numsegs = NPR.randint(minsegs,maxsegs+1)
         v = gen_segmented_vector(vectorlen,numsegs)
         case = [v,int_to_one_hot(numsegs,maxsegs-minsegs+1)] if poptargs else [v,numsegs]

@@ -1,0 +1,24 @@
+{
+    "acc_lim": 1,
+    "activation_func": "tanh",
+    "case_count": null,
+    "cost_func": "CE",
+    "data_source": "gen_all_one_hot_cases",
+    "dendogram_layers": null,
+    "dims": [
+        8,
+        4,
+        8
+    ],
+    "epochs": 10000,
+    "initial_weight_range": "scaled",
+    "lr": 0.5,
+    "map_bs": 20,
+    "map_layers": ["layer1/weights/Variable:0"],
+    "mbs": "full",
+    "softmax": false,
+    "tfrac": 0.1,
+    "vfrac": 0.1,
+    "vint" : 10000,
+    "show" : false
+}
