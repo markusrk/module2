@@ -1,9 +1,3 @@
-import matplotlib.pyplot as PLT
-import Gann_test
-import tflowtools as TFT
-import numpy as np
-import matplotlib as PLT
-
 #f_and_l = TFT.gen_all_parity_cases(3)
 #f = []
 #l = []
