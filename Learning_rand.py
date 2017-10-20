@@ -41,31 +41,31 @@ import matplotlib as PLT
 #     cman = Gann_test.Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
 #     print(cman.get_validation_cases())
 
-
-import json
-
-def test_function(v1,v2):
-    print(str(v1+v2))
-
-d = {'dims':[9,40,20,6],
-     'activation_func':'tanh',
-     'softmax':True,
-     'cost_func':'CE',
-     'lr': 0.5,
-     'initial_weight_range':'scaled',
-     'data_source':'gen_glass_cases',
-     'case_count': None,
-     'vfrac':0.1,
-     'tfrac':0.1,
-     'mbs':170,
-     'map_bs':20,
-     'epochs':10000,
-     'map_layers':None,
-     'dendogram_layers':None,
-     'acc_lim': 0.95,
-     }
-f = open("configs/glass.txt",'w')
-json.dump(d,f,indent=4)
+#
+# import json
+#
+# def test_function(v1,v2):
+#     print(str(v1+v2))
+#
+# d = {'dims':[9,40,20,6],
+#      'activation_func':'tanh',
+#      'softmax':True,
+#      'cost_func':'CE',
+#      'lr': 0.5,
+#      'initial_weight_range':'scaled',
+#      'data_source':'gen_glass_cases',
+#      'case_count': None,
+#      'vfrac':0.1,
+#      'tfrac':0.1,
+#      'mbs':170,
+#      'map_bs':20,
+#      'epochs':100,
+#      'map_layers':None,
+#      'dendogram_layers':None,
+#      'acc_lim': 0.95,
+#      }
+# f = open("configs/fast.txt",'w')
+# json.dump(d,f,indent=4)
 
 
 # import tf_raw3 as raw
@@ -77,3 +77,9 @@ json.dump(d,f,indent=4)
 # sess= tf.InteractiveSession()
 # a = raw.CE(y,x)
 # print(sess.run(a))
+
+import numpy as np
+
+n = np.array([1,1,1,1])
+for x, v in np.ndenumerate(n):
+     print(str(x)+str(v))

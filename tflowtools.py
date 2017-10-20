@@ -413,18 +413,17 @@ def hinton_plot(matrix, maxval=None, maxsize=1, fig=None,trans=True,scale=True, 
         blob = PLT.Rectangle(bottom_left, size, size, facecolor=color, edgecolor=colors[3])
         axes.add_patch(blob)
     axes.autoscale_view()
-    PLT.draw()
-    PLT.show()
+
 
 # This graphically displays a matrix with color codes for positive, negative, small positive and small negative,
 # with the latter 2 defined by the 'cutoff' argument.  The transpose (trans) arg defaults to
 # True so that matrices are plotted with rows along a horizontal plane, with the 0th row on top.
 # Colors denote: [positive, small positive, small negative, negative]
 
-def display_matrix(matrix,fig=None,trans=True,scale=True, title='Matrix',tform='{:.3f}',tsize=12,
+def display_matrix(matrix,fig=None,trans=False,scale=True, title='Matrix',tform='{:.3f}',tsize=8,
                    cutoff=0.1,colors=['red','yellow','grey','blue']):
     hfig = fig if fig else PLT.figure()
-    hfig.suptitle(title,fontsize=18)
+    hfig.suptitle(title,fontsize=12)
     if trans: matrix = matrix.transpose()
     axes = hfig.gca()
     axes.clear()
@@ -436,7 +435,7 @@ def display_matrix(matrix,fig=None,trans=True,scale=True, title='Matrix',tform='
     for (x, y), val in np.ndenumerate(matrix):
         if val > 0: color = colors[0] if val > cutoff else colors[1]
         else: color = colors[3] if val < -cutoff else colors[2]
-        botleft = [x - 1/2, (ymax - y) - 1/2] # (ymax - y) to invert: row 0 at TOP of diagram
+        botleft = [x*10 - 1/2, (ymax - y) - 1/2] # (ymax - y) to invert: row 0 at TOP of diagram
         # This is a hack, but I seem to need to add these blank blob rectangles first, and then I can add the text
         # boxes.  If I omit the blobs, I get just one plotted textbox...grrrrrr.
         blob = PLT.Rectangle(botleft, 1,1, facecolor='white',edgecolor='white')
@@ -446,7 +445,31 @@ def display_matrix(matrix,fig=None,trans=True,scale=True, title='Matrix',tform='
                   color='black',size=tsize)
     axes.autoscale_view()
     PLT.draw()
-    PLT.pause(1)
+    
+def display_vector(vector,fig=None,trans=False,scale=True, title='vector',tform='{:.3f}',tsize=8,
+                   cutoff=0.1,colors=['red','yellow','grey','blue']):
+    hfig = fig if fig else PLT.figure()
+    hfig.suptitle(title,fontsize=12)
+    axes = hfig.gca()
+    axes.clear()
+    axes.patch.set_facecolor('white');  # This is the background color.  Hinton uses gray
+    axes.set_aspect('auto','box')  # Options: ('equal'), ('equal','box'), ('auto'), ('auto','box')..see matplotlib docs
+    axes.xaxis.set_major_locator(PLT.NullLocator()); axes.yaxis.set_major_locator(PLT.NullLocator())
+    y = 0
+    ymax = 1
+    for (x,), val in np.ndenumerate(vector):
+        if val > 0: color = colors[0] if val > cutoff else colors[1]
+        else: color = colors[3] if val < -cutoff else colors[2]
+        botleft = [ (ymax - y) - 1/2,x - 1/2] # (ymax - y) to invert: row 0 at TOP of diagram
+        # This is a hack, but I seem to need to add these blank blob rectangles first, and then I can add the text
+        # boxes.  If I omit the blobs, I get just one plotted textbox...grrrrrr.
+        blob = PLT.Rectangle(botleft, 1,1, facecolor='white',edgecolor='white')
+        axes.add_patch(blob)
+        axes.text(botleft[0]+0.5,botleft[1]+0.5,tform.format(val),
+                  bbox=dict(facecolor=color,alpha=0.5,edgecolor='white'),ha='center',va='center',
+                  color='black',size=tsize)
+    axes.autoscale_view()
+    PLT.draw()
 
 # ****** Principle Component Analysis (PCA) ********
 # This performs the basic operations outlined in "Python Machine Learning" (pp.128-135).  It begins with
