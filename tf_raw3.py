@@ -258,7 +258,7 @@ def train(dims=[11,40,20,6],
 
   for i in range(epochs):
     if i % bint == 0:  # Record summaries and test-set accuracy
-      summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('train')) # todo must change feed_dict back to false if accuracy is supposed to be on testing data
+      summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('train'))
       test_writer.add_summary(summary, i)
       print('Accuracy at step %s: %s' % (i, acc))
 
@@ -288,6 +288,14 @@ def train(dims=[11,40,20,6],
 
   train_writer.close()
   test_writer.close()
+
+
+  # Display final test scores
+  summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('train'))
+  print('Final training set accuracy: %s' % ( acc))
+
+  summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('test'))
+  print('Final testing set accuracy: %s' % ( acc))
 
   # Code for displaying graphs
   if dendogram_layers:

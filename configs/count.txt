@@ -1,5 +1,5 @@
 {
-    "acc_lim": 0.98,
+    "acc_lim": 0.975,
     "activation_func": "tanh",
     "case_count": null,
     "cost_func": "CE",
@@ -15,7 +15,7 @@
     "initial_weight_range": "scaled",
     "lr": 0.5,
     "map_bs": 20,
-    "map_layers": null,
+    "map_layers": ["layer1/biases/Variable:0"],
     "mbs": "full",
     "softmax": false,
     "tfrac": 0.1,

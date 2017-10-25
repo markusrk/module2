@@ -19,5 +19,5 @@
     "lr": 0.5,
     "softmax": false,
     "mbs": 1186,
-    "acc_lim": 1.1
+    "acc_lim": 0.95
 }

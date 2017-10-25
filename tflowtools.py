@@ -173,7 +173,7 @@ def gen_all_parity_cases(num_bits=10,case_count=None, double=True):
 # the number of 1's in the feature vector(default) or simply the count label.  Note that the target vector is one bit
 # larger than the feature vector to account for the case of a zero-sum feature vector.
 
-def gen_vector_count_cases(size,num=15,drange=(0,1),random=True,poptarg=True):
+def gen_vector_count_cases(size=15,num=500,drange=(0,1),random=True,poptarg=True,case_count=0):
     if random: feature_vectors = gen_random_density_vectors(num,size,density_range=drange)
     else: feature_vectors = gen_all_bit_vectors(size)
     if poptarg:
