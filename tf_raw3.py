@@ -16,7 +16,7 @@ class case_holder:
         self.train_labels = []
         self.dataset = dataset
         org_length = len(dataset)
-        for x in range(round(org_length*tfrac)):
+        for x in range(round(org_length*(1-tfrac-vfrac))):
             i = random.randint(0, len(self.dataset) - 1)
             popped = self.dataset.pop(i)
             self.train_features.append(deepcopy(popped[0]))
