@@ -300,7 +300,10 @@ def train(dims=[11,40,20,6],
   # Code for displaying graphs
   if dendogram_layers:
       _, activation = sess.run([merged,layers[dendogram_layers]],feed_dict=feed_dict('map'))
-      TFT.dendrogram(activation,feed_dict('map')[y_])
+      y_s = []
+      for y in feed_dict('map')[y_]:
+          y_s.append(TFT.segmented_vector_string(y))
+      TFT.dendrogram(activation,y_s)
 
   if show:
     TFT.plot_training_history(train_acc,val_acc)
