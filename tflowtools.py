@@ -400,10 +400,10 @@ def plot_training_history(error_hist,validation_hist=[],xtitle="Epoch",ytitle="E
     PLT.ion()
     if fig: PLT.figure()
     if len(error_hist) > 0:
-        simple_plot([p[1] for p in error_hist], [p[0] for p in error_hist],xtitle=xtitle,ytitle=ytitle,title=title,label='training error')
+        simple_plot([p[1] for p in error_hist], [p[0] for p in error_hist],xtitle=xtitle,ytitle=ytitle,title=title,label='training accuracy')
         PLT.hold(True)
     if len(validation_hist) > 0:
-        simple_plot([p[1] for p in validation_hist], [p[0] for p in validation_hist],xtitle=xtitle,ytitle=ytitle,title=title,label='validation error')
+        simple_plot([p[1] for p in validation_hist], [p[0] for p in validation_hist],xtitle=xtitle,ytitle=ytitle,title=title,label='validation accuracy')
     PLT.legend()
     PLT.draw()
     PLT.pause(0.0001)
