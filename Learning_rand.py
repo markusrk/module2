@@ -81,7 +81,32 @@
 
 
 import tflowtools as TFT
+import tf_raw3 as tr
 #a = TFT.segmented_vector_string([1,0,0,0,0,0,1],)
 #print(a)
 
-print(TFT.gen_vector_count_cases())
+#print(TFT.gen_vector_count_cases())
+
+activation_func = 'tanh',
+softmax = True,
+cost_func = 'CE',
+lr = 0.5,
+vint = 10,
+bint = 10,
+acc_lim = 0.95,
+initial_weight_range = [-0.1, 0.1],
+data_source = 'gen_wine_cases'
+case_count = 100,
+vfrac = 0.1,
+tfrac = 0.1,
+mbs = 1277,
+map_bs = 20,
+epochs = 10000,
+map_layers = None,
+dendogram_layers = None,
+show = True
+
+dataset = getattr(TFT, data_source)(case_count=case_count)
+mnist = tr.case_holder(dataset, tfrac=tfrac, vfrac=vfrac)
+
+print(mnist.train_features)

@@ -13,6 +13,7 @@
     "vfrac": 0.1,
     "data_source": "gen_glass_cases",
     "map_layers": null,
+    "show_layers": null,
     "tfrac": 0.1,
     "softmax": false,
     "dendogram_layers": null,

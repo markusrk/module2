@@ -343,7 +343,7 @@ def segment_count(vect,onval=1,offval=0):
 
 # This produces a string consisting of the binary vector followed by the segment count surrounded by a few symbols
 # and/or blanks.  These strings are useful to use as labels during dendrogram plots, for example.
-def segmented_vector_string(v,pre='** ',post=' **'):
+def segmented_vector_string(v,pre='** ',post=' **   '):
     def binit(vect): return map((lambda x: 1 if x > 0 else 0), vect)
     return ''.join(map(str, binit(v))) + pre + str(segment_count(v)) + post
 

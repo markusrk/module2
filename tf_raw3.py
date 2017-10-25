@@ -100,24 +100,25 @@ def MSE(y,x):
 error_funcs = {'CE':CE,'MSE':MSE}
 
 def train(dims=[11,40,20,6],
-     activation_func='tanh',
-     softmax=True,
-     cost_func=CE,
-     lr= 0.5,
-     vint = 10,
-     bint = 10,
-     acc_lim = 0.95,
-     initial_weight_range=[-0.1,0.1],
-     data_source='gen_wine_cases',
-     case_count=1,
-     vfrac=0.1,
-     tfrac=0.1,
-     mbs=1277,
-     map_bs=20,
-     epochs=10000,
-     map_layers=None,
-     dendogram_layers=None,
-     show=True):
+          activation_func='tanh',
+          softmax=True,
+          cost_func=CE,
+          lr= 0.5,
+          vint = 10,
+          bint = 10,
+          acc_lim = 0.95,
+          initial_weight_range=[-0.1,0.1],
+          data_source='gen_wine_cases',
+          case_count=1,
+          vfrac=0.1,
+          tfrac=0.1,
+          mbs=1277,
+          map_bs=20,
+          epochs=10000,
+          show_layers=None,
+          dendogram_layers=None,
+          show=True,
+          map_layers = [1, 2]):
 
 
   #Training and validation accuracies
@@ -298,26 +299,41 @@ def train(dims=[11,40,20,6],
   print('Final testing set accuracy: %s' % ( acc))
 
   # Code for displaying graphs
-  if dendogram_layers:
-      _, activation = sess.run([merged,layers[dendogram_layers]],feed_dict=feed_dict('map'))
-      y_s = []
-      for y in feed_dict('map')[y_]:
-          y_s.append(TFT.segmented_vector_string(y))
-      TFT.dendrogram(activation,y_s)
 
   if show:
     TFT.plot_training_history(train_acc,val_acc)
 
   if map_layers:
+      for l in map_layers:
+          _, activation = sess.run([merged,layers[l]],feed_dict=feed_dict('map'))
+          TFT.display_matrix(activation, title="mapping of layer: "+ str(l))
+      # for variable in tf.trainable_variables():
+      #     if variable.name in real-map_layer:
+              # _,values = sess.run([merged,variable],feed_dict=feed_dict('map'))
+              # if 'weigths' in variable.name:
+              #     TFT.display_matrix(values)
+              # elif 'biases' in variable.name:
+              #     TFT.display_vector(values)
+              # else:
+              #     raise Exception("wrong dimensionality on show layers")
+
+  if show_layers:
       for variable in tf.trainable_variables():
-          if variable.name in map_layers:
+          if variable.name in show_layers:
               _,values = sess.run([merged,variable],feed_dict=feed_dict('map'))
               if len(values.shape) == 2:
-                  TFT.display_matrix(values)
+                  TFT.display_matrix(values, title="weights of: "+variable.name)
               elif len(values.shape) == 1:
-                  TFT.display_vector(values)
+                  TFT.display_vector(values, title="biases of: "+variable.name)
               else:
                   raise Exception("wrong dimensionality on map layers")
+
+  if dendogram_layers:
+      _, activation = sess.run([merged,layers[dendogram_layers]],feed_dict=feed_dict('map'))
+      y_s = []
+      for y in feed_dict('map')[x]:
+          y_s.append(TFT.segmented_vector_string(y))
+      TFT.dendrogram(activation,y_s)
 
   PLT.show()
 

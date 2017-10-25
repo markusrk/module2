@@ -20,5 +20,6 @@
     "softmax": false,
     "case_count": null,
     "cost_func": "CE",
-    "data_source": "gen_wine_cases"
+    "data_source": "gen_wine_cases",
+    "show_layers": null
 }
