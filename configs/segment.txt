@@ -22,5 +22,5 @@
     "vfrac": 0.1,
     "show" : false
     "map_layers" : null,
-    "show_layers": null,
+    "show_layers": null
 }

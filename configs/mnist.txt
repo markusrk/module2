@@ -4,7 +4,7 @@
     "case_count": null,
     "cost_func": "CE",
     "data_source": "gen_mnist_cases",
-    "dendogram_layers": null,
+    "dendogram_layers": [1,2],
     "dims": [
         784,
         500,
@@ -13,7 +13,7 @@
     "epochs": 10000,
     "initial_weight_range": "scaled",
     "lr": 0.5,
-    "map_bs": 20,
+    "map_bs": 25,
     "map_layers": null,
     "show_layers": null,
     "mbs": "full",

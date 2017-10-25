@@ -147,7 +147,7 @@ def gen_line_array(dims,indices,line_item=1,background=0,columns=False,bias=1.0)
 
 # The simplest autoencoders use the set of one-hot vectors as inputs and target outputs.
 
-def gen_all_one_hot_cases(len=8, floats=False,case_count=None):
+def gen_all_one_hot_cases(len=4, floats=False,case_count=None):
     return [[c,c] for c in all_one_hots(len,floats=floats)]
 
 # This creates autoencoder cases for vector's with any density of 1's (specified by density_range).

@@ -1,23 +1,3 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the 'License');
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an 'AS IS' BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-"""A simple MNIST classifier which displays summaries in TensorBoard.
-This is an unimpressive MNIST model, but it is a good example of using
-tf.name_scope to make a graph legible in the TensorBoard graph explorer, and of
-naming summary tags so that they are grouped meaningfully in TensorBoard.
-It demonstrates the functionality of every TensorBoard dashboard.
-"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -239,12 +219,7 @@ def train(dims=[11,40,20,6],
   test_writer = tf.summary.FileWriter('netsaver_test' + '/test')
   tf.global_variables_initializer().run()
 
-  # Train the model, and also write summaries.
-  # Every 10th step, measure test-set accuracy, and write test summaries
-  # All other steps, run train_step on training data, & add training summaries
-
   def feed_dict(train):
-    """Make a TensorFlow feed_dict: maps data onto Tensor placeholders."""
     if train == "train":
       xs, ys = mnist.train_next_batch(size=mbs)
     elif train == 'test':
@@ -282,10 +257,6 @@ def train(dims=[11,40,20,6],
         summary, _ = sess.run([merged, train_step], feed_dict=feed_dict('train'))
         train_writer.add_summary(summary, i)
 
-    # Own code for pulling validation accuracy to matplot graph
-    if i % vint == 0:
-        _, validation_acc = sess.run([merged, accuracy], feed_dict=feed_dict('val'))
-        val_acc.append([i, validation_acc])
 
   train_writer.close()
   test_writer.close()
@@ -295,11 +266,8 @@ def train(dims=[11,40,20,6],
   summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('train'))
   print('Final training set accuracy: %s' % ( acc))
 
-  summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('test'))
-  print('Final testing set accuracy: %s' % ( acc))
 
   # Code for displaying graphs
-
   if show:
     TFT.plot_training_history(train_acc,val_acc)
 
@@ -329,11 +297,12 @@ def train(dims=[11,40,20,6],
                   raise Exception("wrong dimensionality on map layers")
 
   if dendogram_layers:
-      _, activation = sess.run([merged,layers[dendogram_layers]],feed_dict=feed_dict('map'))
-      y_s = []
-      #for y in feed_dict('map')[x]:
-      #    y_s.append(TFT.segmented_vector_string(y))
-      TFT.dendrogram(activation,feed_dict('map')[y_])
+      for l in dendogram_layers:
+          _, activation = sess.run([merged,layers[l]],feed_dict=feed_dict('map'))
+          y_s = []
+          #for y in feed_dict('map')[x]:
+          #    y_s.append(TFT.segmented_vector_string(y))
+          TFT.dendrogram(activation,feed_dict('map')[y_], title="Dendogram, layer: "+str(l))
 
   PLT.show()
 
