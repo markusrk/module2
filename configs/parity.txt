@@ -15,7 +15,7 @@
     "lr": 0.005,
     "map_bs": 20,
     "map_layers": [0],
-    "show_layers": ["layer1/weights/Variable:0"],
+    "show_layers": null,
     "mbs": "full",
     "softmax": false,
     "tfrac": 0.1,

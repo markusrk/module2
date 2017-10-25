@@ -1,0 +1,24 @@
+{
+    "mbs": "full",
+    "activation_func": "tanh",
+    "acc_lim": 0.4,
+    "vfrac": 0.1,
+    "epochs": 10000,
+    "map_bs": 20,
+    "lr": 0.5,
+    "dendogram_layers": null,
+    "initial_weight_range": "scaled",
+    "dims": [
+        4,
+        40,
+        20,
+        2
+    ],
+    "tfrac": 0.2,
+    "map_layers": [1],
+    "softmax": false,
+    "case_count": null,
+    "cost_func": "CE",
+    "data_source": "gen_bank_note_cases",
+    "show_layers": null
+}

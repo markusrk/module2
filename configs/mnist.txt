@@ -4,7 +4,7 @@
     "case_count": null,
     "cost_func": "CE",
     "data_source": "gen_mnist_cases",
-    "dendogram_layers": [1,2],
+    "dendogram_layers": null,
     "dims": [
         784,
         500,

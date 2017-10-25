@@ -4,7 +4,7 @@
     "case_count": null,
     "cost_func": "CE",
     "data_source": "gen_vector_count_cases",
-    "dendogram_layers": [1],
+    "dendogram_layers": null,
     "dims": [
         15,
         40,
