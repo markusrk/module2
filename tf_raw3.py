@@ -329,3 +329,6 @@ if __name__ == '__main__':
     f = open(config_file,'r')
     dict = json.load(f)
     main(dict)
+
+    import warnings
+    warnings.filterwarnings("ignore")

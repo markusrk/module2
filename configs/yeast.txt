@@ -17,7 +17,7 @@
     "show_layers": null,
     "initial_weight_range": "scaled",
     "data_source": "gen_yeast_cases",
-    "lr": 0.01,
+    "lr": 0.007,
     "softmax": false,
     "mbs": "full",
     "acc_lim": 0.95
