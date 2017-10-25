@@ -7,6 +7,10 @@ import scipy.cluster.hierarchy as SCH  # Needed for dendrograms
 import numpy.random as NPR
 import tensorflow as tf
 
+import warnings
+
+warnings.filterwarnings("ignore")
+
 # ****** SESSION HANDLING *******
 
 def gen_initialized_session(dir='probeview'):

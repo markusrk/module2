@@ -4,7 +4,7 @@
     "case_count": null,
     "cost_func": "CE",
     "data_source": "gen_all_one_hot_cases",
-    "dendogram_layers": null,
+    "dendogram_layers": [0,1],
     "dims": [
         4,
         2,
@@ -15,7 +15,7 @@
     "lr": 0.005,
     "map_bs": 20,
     "show_layers": ["layer1/weights/Variable:0","layer2/weights/Variable:0","layer1/biases/Variable:0","layer2/biases/Variable:0"],
-    "map_layers": [1],
+    "map_layers": null,
     "mbs": "full",
     "softmax": false,
     "tfrac": 0,
