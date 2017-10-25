@@ -21,5 +21,5 @@
     "tfrac": 0.1,
     "vfrac": 0.1,
     "vint" : 10000,
-    "show" : false
+    "show" : true
 }

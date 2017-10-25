@@ -281,6 +281,22 @@ def gen_mnist_cases(case_count=None):
         combined.append([features[x],labels[x]])
     return combined
 
+def gen_bank_note_cases(case_count=None):
+    f = open('datasets/data_banknote_authentication.txt', 'r')
+    features, labels = ([], [])
+    for line in f:
+        split_line = list(map(float, line.split(",")))
+        features.append(split_line[:len(split_line) - 1])
+        labels.append(split_line[-1] - 1)
+    features = np.array(features)
+    features_scale = preprocessing.scale(features)
+    output = []
+    for i in range(len(features_scale)):
+        output.append([features_scale[i].tolist(), int_to_one_hot(int(labels[i]), 2)])
+    if case_count:
+        return output[:case_count]
+    return output
+
 
 # ********** SEGMENT VECTORS **********
 # These have groups/segments/blobs of "on" bits interspersed in a background of "off" bits.  The key point is that we can
