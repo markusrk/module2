@@ -202,7 +202,7 @@ def train(dims=[11,40,20,6],
   tf.summary.scalar('cross_entropy', cross_entropy)
 
   with tf.name_scope('train'):
-    train_step = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(
+    train_step = tf.train.AdamOptimizer(learning_rate=lr).minimize(
         cross_entropy)
 
   with tf.name_scope('accuracy'):
@@ -257,14 +257,21 @@ def train(dims=[11,40,20,6],
         summary, _ = sess.run([merged, train_step], feed_dict=feed_dict('train'))
         train_writer.add_summary(summary, i)
 
+      # Own code for pulling validation accuracy to matplot graph
+    if i % vint == 0:
+        validation_acc = sess.run(accuracy, feed_dict=feed_dict('val'))
+        val_acc.append([i, validation_acc])
 
   train_writer.close()
   test_writer.close()
 
 
-  # Display final test scores
+  # Display final test and training accuracy scores
   summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('train'))
   print('Final training set accuracy: %s' % ( acc))
+
+  summary, acc = sess.run([merged, accuracy], feed_dict=feed_dict('test'))
+  print('Final testin set accuracy: %s' % ( acc))
 
 
   # Code for displaying graphs

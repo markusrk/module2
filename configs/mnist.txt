@@ -12,7 +12,7 @@
     ],
     "epochs": 10000,
     "initial_weight_range": "scaled",
-    "lr": 0.5,
+    "lr": 0.005,
     "map_bs": 25,
     "map_layers": null,
     "show_layers": null,

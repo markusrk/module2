@@ -2,7 +2,7 @@
     "cost_func": "CE",
     "vfrac": 0.1,
     "case_count": null,
-    "mbs": 1277,
+    "mbs": "full",
     "map_bs": 20,
     "dims": [
         11,
@@ -14,7 +14,7 @@
     "activation_func": "tanh",
     "tfrac": 0.1,
     "acc_lim": 0.95,
-    "lr": 0.5,
+    "lr": 0.005,
     "map_layers": null,
     "show_layers": null,
     "dendogram_layers": null,
